@@ -8,6 +8,7 @@ export type DetectionResponseInitOpts = {
         error?: boolean
         message?: string
         detected: boolean
+        additionalData?: Record<string, unknown>
     }
 }
 
@@ -23,13 +24,13 @@ export class DetectionResponse {
 
     constructor({
         request,
-        detectionInfo: { error, message, detected },
+        detectionInfo: { error, message, detected, additionalData },
     }: DetectionResponseInitOpts) {
         this.requestId = request.id ?? ''
         this.chainId = request.chainId
         this.protocolAddress = request.protocolAddress ?? ''
         this.protocolName = request.protocolName ?? ''
-        this.additionalData = request.additionalData
+        this.additionalData = additionalData || request.additionalData
         this.error = error
         this.message = message
         this.detected = detected

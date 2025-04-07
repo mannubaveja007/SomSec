@@ -6,21 +6,38 @@
 ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white)
 ![Yarn](https://img.shields.io/badge/yarn-%232C8EBB.svg?style=for-the-badge&logo=yarn&logoColor=white)
 
-# Venn Custom Detector boilerplate
-A boilerplate for getting started with Venn as a Security Provider. Use is as a starting point to build your own custom detectors on Venn Network.
+# AI Smart Contract Vulnerability Detector
+An advanced smart contract vulnerability detection system built on the Venn Custom Detector boilerplate. This system utilizes Together AI to analyze smart contracts for security vulnerabilities and provide detailed reports.
 
 > 📚 [What is Venn?](https://docs.venn.build/)
 
 ## Table of Contents
-- [Introduction](#venn-custom-detector-boilerplate)
+- [Introduction](#ai-smart-contract-vulnerability-detector)
+- [Features](#-features)
 - [Quick Start](#quick-start)
 - [What's inside?](#-whats-inside)
 - [Local development:](#️-local-development)
+- [API Reference](#-api-reference)
 - [Deploy to production](#-deploy-to-production)
 
+## ✅ Features
+- **AI-Powered Analysis**: Uses Together AI's advanced language models to detect vulnerabilities in smart contracts
+- **Detailed Reports**: Provides comprehensive analysis with severity ratings and fix recommendations
+- **Beautiful UI**: Modern web interface for submitting contracts and viewing results
+- **API Access**: Fully documented API for integrating the vulnerability detection into other tools
+- **Multiple Vulnerability Detection**: Identifies various common vulnerabilities including:
+  - Reentrancy attacks
+  - Access control vulnerabilities
+  - Integer overflow/underflow
+  - Timestamp dependence
+  - Front-running vulnerabilities
+  - And many more
+
 ## ✨ Quick start
-1. Clone or fork this repo and install dependencies using `yarn install` _(or `npm install`)_
-2. Find the detection service under: `src/modules/detection-module/service.ts`
+1. Clone this repo and install dependencies using `npm install`
+2. Create a `.env` file with your Together AI API key (see [Environment Setup](#-local-development))
+3. Run `npm run dev` to start the development server
+4. Access the web interface at `http://localhost:3000`
 
     ```ts
     import { DetectionResponse, DetectionRequest } from './dtos'
@@ -68,13 +85,17 @@ A boilerplate for getting started with Venn as a Security Provider. Use is as a 
 5. That's it! Your custom detector service is now ready to inspect transaction
 
 ## 📦 What's inside?
-This boilerplate is built using `Express.js`, and written in `TypeScript` using `NodeJS`.  
-You can use it as-is by adding your own security logic to it, or as a reference point when using a different programming language.
+This application is built using `Express.js`, and written in `TypeScript` using `NodeJS`. It includes:
 
-**Notes on the API**
-1. Your detector will get a `DetectionRequest`, and is expected to respond with a `DetectionResponse`
+- **Together AI Integration**: Analyzes smart contracts using Together AI's language models
+- **Modern UI**: Responsive web interface built with Bootstrap 5
+- **RESTful API**: Well-documented API for programmatic access
+- **Detailed Vulnerability Reports**: Comprehensive analysis with actionable insights
 
-See our [API Reference](https://github.com/ironblocks/venn-custom-detection/blob/master/docs/requests-responses.docs.md) for more information.
+**Supported Smart Contract Analysis**:
+- Comprehensive vulnerability detection for Solidity smart contracts
+- Security analysis based on industry best practices
+- Actionable recommendations for fixing vulnerabilities
 
 ## 🛠️ Local Development
 
@@ -86,12 +107,59 @@ Create a `.env` file with:
 PORT=3000
 HOST=localhost
 LOG_LEVEL=debug
+TOGETHER_API_KEY=your_together_api_key_here  # Get this from https://api.together.xyz/
 ```
 
-**Runing In Dev Mode**
+**Running In Dev Mode**
 ```bash
-yarn        # or npm install
-yarn dev    # or npm run dev
+npm install
+npm run dev
+```
+
+## 📘 API Reference
+
+### Smart Contract Analysis Endpoint
+
+```http
+POST /api/detection/analyze-contract
+```
+
+**Request Body:**
+
+```json
+{
+  "contractName": "string", // Name of the contract
+  "contractCode": "string"  // Full Solidity contract code
+}
+```
+
+**Response:**
+
+```json
+{
+  "vulnerabilities": [
+    {
+      "type": "string",     // Type of vulnerability (e.g., "Reentrancy")
+      "severity": "string", // "High", "Medium", or "Low"
+      "description": "string", // Detailed description
+      "location": "string", // Function or section with the vulnerability
+      "recommendation": "string" // Fix recommendation
+    }
+  ],
+  "overallRisk": "string", // "High", "Medium", "Low", or "Safe"
+  "summary": "string"      // Brief summary of findings
+}
+```
+
+**Example Request:**
+
+```bash
+curl -X POST http://localhost:3000/api/detection/analyze-contract \
+     -H "Content-Type: application/json" \
+     -d '{
+       "contractName": "SimpleStorage",
+       "contractCode": "pragma solidity ^0.8.0;\n\ncontract SimpleStorage {\n    uint256 private storedData;\n\n    function set(uint256 x) public {\n        storedData = x;\n    }\n\n    function get() public view returns (uint256) {\n        return storedData;\n    }\n}"
+     }'
 ```
 
 ## 🚀 Deploy To Production

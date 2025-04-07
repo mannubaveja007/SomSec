@@ -7,6 +7,6 @@ const router = Router()
 
 /* ASSIGN EACH ROUTER TO DEDICATED SUBROUTE */
 router.use('/app', appRouter)
-router.use('/detect', detectionRouter)
+router.use('/detection', detectionRouter)
 
 export { router }

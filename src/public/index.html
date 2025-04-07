@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Contract Vulnerability Detector</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="https://img.icons8.com/color/48/000000/shield.png">
+</head>
+<body>
+    <div class="container">
+        <header class="pt-5 pb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-3">AI Smart Contract Vulnerability Detector</h1>
+                    <p class="lead">Analyze smart contracts for hidden risks that could allow developers to drain funds or disable withdrawals.</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="powered-by">
+                        <span>Powered by</span>
+                        <img src="https://api.together.xyz/images/logos/together-full-logo-purple.svg" alt="Together AI" height="40">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Smart Contract Code</h5>
+                        <button id="sampleBtn" class="btn btn-sm btn-outline-secondary">Load Sample</button>
+                    </div>
+                    <div class="card-body">
+                        <form id="contractForm">
+                            <div class="mb-3">
+                                <label for="contractName" class="form-label">Contract Name</label>
+                                <input type="text" class="form-control" id="contractName" required placeholder="MyToken">
+                            </div>
+                            <div class="mb-3">
+                                <label for="contractCode" class="form-label">Paste your smart contract code</label>
+                                <textarea class="form-control" id="contractCode" rows="15" required placeholder="// Paste your Solidity smart contract code here"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="analyzeBtn">
+                                <span id="analyzeSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                Analyze Contract
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card mb-4 results-container">
+                    <div class="card-header">
+                        <h5 class="mb-0">Analysis Results</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div id="loadingResults" class="text-center d-none flex-grow-1 d-flex flex-column justify-content-center">
+                            <div class="spinner-border text-primary mx-auto" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Analyzing your contract with AI...</p>
+                        </div>
+                        <div id="resultsContent" class="d-none flex-grow-1">
+                            <div class="alert mb-3" id="riskAlert">
+                                <h5 class="alert-heading">Overall Risk: <span id="overallRisk">--</span></h5>
+                                <p id="summary">--</p>
+                            </div>
+
+                            <h5>Detected Vulnerabilities</h5>
+                            <div id="vulnerabilities">
+                                <div class="text-muted">No vulnerabilities detected yet.</div>
+                            </div>
+                        </div>
+                        <div id="initialState" class="flex-grow-1 d-flex flex-column justify-content-center">
+                            <div class="text-center text-muted p-5">
+                                <i class="bi bi-shield-lock text-primary" style="font-size: 4rem;"></i>
+                                <p class="mt-3">Submit a smart contract for AI-powered vulnerability analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card api-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Test with Postman or cURL</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-pills mb-3" id="apiTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="postman-tab" data-bs-toggle="pill" data-bs-target="#postman" type="button" role="tab" aria-controls="postman" aria-selected="true">Postman</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="curl-tab" data-bs-toggle="pill" data-bs-target="#curl" type="button" role="tab" aria-controls="curl" aria-selected="false">cURL</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="apiTabsContent">
+                            <div class="tab-pane fade show active" id="postman" role="tabpanel" aria-labelledby="postman-tab">
+                                <div class="postman-info">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <img src="https://www.postman.com/favicon-32x32.png" alt="Postman logo">
+                                        <span class="fw-bold">How to test with Postman</span>
+                                        <span class="postman-badge">Recommended</span>
+                                    </div>
+                                    <ol class="mb-2">
+                                        <li>Open Postman and create a new request</li>
+                                        <li>Set method to <code>POST</code></li>
+                                        <li>Enter URL: <code>http://localhost:3000/api/detection/analyze-contract</code></li>
+                                        <li>Go to <strong>Body</strong> tab and select <code>raw</code> and <code>JSON</code></li>
+                                        <li>Paste the following JSON:</li>
+                                    </ol>
+                                    <pre><code class="language-json">{
+  "contractName": "MyContract",
+  "contractCode": "pragma solidity ^0.8.0;\n\ncontract MyContract {\n    // Your contract code here\n}"
+}</code></pre>
+                                    <button class="btn btn-sm btn-outline-secondary mt-2" id="copyPostmanBtn">
+                                        <i class="bi bi-clipboard"></i> Copy JSON
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="curl" role="tabpanel" aria-labelledby="curl-tab">
+                                <p>Integrate this vulnerability detector into your own application using our API:</p>
+                                <pre><code class="language-bash">curl -X POST http://localhost:3000/api/detection/analyze-contract \
+     -H "Content-Type: application/json" \
+     -d '{"contractName": "MyContract", "contractCode": "// Your contract code here"}'</code></pre>
+                                <button class="btn btn-sm btn-outline-secondary mt-2" id="copyCurlBtn">
+                                    <i class="bi bi-clipboard"></i> Copy Command
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-end mt-3">
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#apiDocsModal">
+                                <i class="bi bi-book"></i> View Full API Docs
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Documentation Modal -->
+    <div class="modal fade" id="apiDocsModal" tabindex="-1" aria-labelledby="apiDocsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="apiDocsModalLabel">API Documentation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4>Smart Contract Vulnerability Detection API</h4>
+                    <p>Our API allows you to analyze Ethereum smart contracts to detect security vulnerabilities and potential risks.</p>
+                    
+                    <h5>Endpoint: Smart Contract Analysis</h5>
+                    <pre><code class="language-http">POST /api/detection/analyze-contract</code></pre>
+                    
+                    <h6>Request Body:</h6>
+                    <pre><code class="language-json">{
+  "contractName": "string", // Name of the contract
+  "contractCode": "string"  // Full Solidity contract code
+}</code></pre>
+                    
+                    <h6>Response:</h6>
+                    <pre><code class="language-json">{
+  "vulnerabilities": [
+    {
+      "type": "string",     // Type of vulnerability (e.g., "Reentrancy")
+      "severity": "string", // "High", "Medium", or "Low"
+      "description": "string", // Detailed description
+      "location": "string", // Function or section with the vulnerability
+      "recommendation": "string" // Fix recommendation
+    }
+  ],
+  "overallRisk": "string", // "High", "Medium", "Low", or "Safe"
+  "summary": "string"      // Brief summary of findings
+}</code></pre>
+                    
+                    <h5>Example Request:</h5>
+                    <pre><code class="language-bash">curl -X POST http://localhost:3000/api/detection/analyze-contract \
+     -H "Content-Type: application/json" \
+     -d '{
+       "contractName": "SimpleStorage",
+       "contractCode": "pragma solidity ^0.8.0;\\n\\ncontract SimpleStorage {\\n    uint256 private storedData;\\n\\n    function set(uint256 x) public {\\n        storedData = x;\\n    }\\n\\n    function get() public view returns (uint256) {\\n        return storedData;\\n    }\\n}"
+     }'</code></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/solidity.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Custom detector boilerplate",
     "scripts": {
-        "dev": "NODE_ENV=development nodemon",
+        "dev": " nodemon",
         "build": "rm -rf dist && NODE_ENV=production tsc && tsc-alias dist --outDir ./dist",
         "preview": "NODE_ENV=development node dist/src/app.js",
         "start": "NODE_ENV=production node dist/src/app.js",
@@ -37,6 +37,8 @@
         "express": "^4.19.2",
         "morgan": "^1.10.0",
         "reflect-metadata": "^0.2.2",
+        "together": "^0.0.11",
+        "together-ai": "^0.13.0",
         "winston": "^3.14.1"
     },
     "devDependencies": {
