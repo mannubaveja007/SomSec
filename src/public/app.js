@@ -68,7 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     
     // Buttons
-    const sampleBtn = document.getElementById('sampleBtn');
+    const sampleBtnTop = document.getElementById('sampleBtnTop');
+    const sampleBtnBottom = document.getElementById('sampleBtnBottom');
     const copyPostmanBtn = document.getElementById('copyPostmanBtn');
     const copyCurlBtn = document.getElementById('copyCurlBtn');
     
@@ -152,12 +153,16 @@ contract VulnerableBank {
     }
 }`;
 
-    // Load sample contract
-    sampleBtn.addEventListener('click', function(e) {
+    // Function to load sample contract
+    function loadSampleContract(e) {
         e.preventDefault();
         contractName.value = "VulnerableBank";
         contractCode.value = sampleContract;
-    });
+    }
+    
+    // Add event listeners to both sample buttons
+    if (sampleBtnTop) sampleBtnTop.addEventListener('click', loadSampleContract);
+    if (sampleBtnBottom) sampleBtnBottom.addEventListener('click', loadSampleContract);
 
     // Function to show alerts
     function showAlert(message, type = 'info') {
@@ -504,16 +509,7 @@ contract VulnerableBank {
         const requestBody = JSON.stringify(requestData);
         console.log('Request payload created, payload size:', requestBody.length);
         
-        // Get API base URL - use window.debugHelpers if available
-        const apiUrl = window.debugHelpers ? 
-            window.debugHelpers.logApiRequest('/api/detection/analyze-contract', 'POST') : 
-            '/api/detection/analyze-contract';
-            
-        // Add timestamp to prevent caching issues
-        const fullUrl = `${apiUrl}${apiUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
-        console.log('Making API request to:', fullUrl);
-        
-        fetch(fullUrl, {
+        fetch('/api/detection/analyze-contract', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -570,6 +566,11 @@ contract VulnerableBank {
 
     // Display analysis results
     function displayResults(data) {
+        // Cache the current analysis for visualization and other features
+        window.currentAnalysis = data;
+        window.currentContractCode = contractCode.value;
+        window.currentContractName = contractName.value;
+        
         // Update risk level and summary
         overallRisk.textContent = data.overallRisk || 'Unknown';
         summary.textContent = data.summary || 'No summary provided.';
@@ -584,10 +585,10 @@ contract VulnerableBank {
         }
         
         // Set risk alert color based on overall risk
-        riskAlert.className = 'alert mb-3';
+        riskAlert.className = 'alert mb-0';
         if (data.overallRisk) {
             const risk = data.overallRisk.toLowerCase();
-            if (risk === 'high') {
+            if (risk === 'high' || risk === 'critical') {
                 riskAlert.classList.add('high');
             } else if (risk === 'medium') {
                 riskAlert.classList.add('medium');
@@ -635,5 +636,601 @@ contract VulnerableBank {
         // Show results and hide loading
         resultsContent.classList.remove('d-none');
         loadingResults.classList.add('d-none');
+        
+        // Enable the save button for database storage
+        const saveAnalysisBtn = document.getElementById('saveAnalysisBtn');
+        if (saveAnalysisBtn) {
+            saveAnalysisBtn.disabled = false;
+            saveAnalysisBtn.onclick = function() {
+                saveAnalysisToDatabase(data, contractCode.value);
+            };
+        }
+        
+        // Initialize visualization if we're on that tab or when tab is clicked
+        initializeVisualization(data, contractCode.value);
+        
+        // Initialize educational content based on vulnerabilities found
+        initializeEducationalContent(data);
     }
+    
+    // Function to save analysis to the database
+    function saveAnalysisToDatabase(analysis, contractCode) {
+        // Check if the database module is loaded
+        if (window.AnalysisDB && window.AnalysisDB.db) {
+            const analysisName = `${window.currentContractName || 'Contract'} - ${new Date().toLocaleString()}`;
+            
+            window.AnalysisDB.db.saveAnalysis(analysis, contractCode, analysisName)
+                .then((id) => {
+                    showAlert(`Analysis saved successfully with ID: ${id}`, 'success');
+                    refreshAnalysisHistoryList();
+                })
+                .catch((error) => {
+                    console.error('Error saving analysis:', error);
+                    showAlert('Failed to save analysis to database', 'danger');
+                });
+        } else {
+            console.error('Analysis database module not loaded');
+            showAlert('Analysis database module not loaded', 'danger');
+        }
+    }
+    
+    // Function to refresh the analysis history list
+    function refreshAnalysisHistoryList() {
+        // Check if the database module is loaded
+        if (window.AnalysisDB && window.AnalysisDB.db && window.AnalysisDB.ui) {
+            const historyList = document.getElementById('analysis-history-list');
+            if (historyList) {
+                window.AnalysisDB.db.getAllAnalyses()
+                    .then((analyses) => {
+                        window.AnalysisDB.ui.renderAnalysisList(analyses, historyList);
+                        
+                        // Also update the select dropdowns for comparison
+                        updateComparisonSelects(analyses);
+                    })
+                    .catch((error) => {
+                        console.error('Error loading analysis history:', error);
+                    });
+            }
+        }
+    }
+    
+    // Function to update the comparison select dropdowns
+    function updateComparisonSelects(analyses) {
+        const select1 = document.getElementById('analysis1-select');
+        const select2 = document.getElementById('analysis2-select');
+        const compareBtn = document.getElementById('compare-btn');
+        
+        if (select1 && select2 && compareBtn) {
+            // Clear existing options except the first one
+            while (select1.options.length > 1) select1.options.remove(1);
+            while (select2.options.length > 1) select2.options.remove(1);
+            
+            if (analyses && analyses.length > 0) {
+                // Enable the selects
+                select1.disabled = false;
+                select2.disabled = false;
+                
+                // Add options for each analysis
+                analyses.forEach((analysis) => {
+                    const option1 = document.createElement('option');
+                    option1.value = analysis.id;
+                    option1.textContent = analysis.name;
+                    select1.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = analysis.id;
+                    option2.textContent = analysis.name;
+                    select2.appendChild(option2);
+                });
+                
+                // Enable compare button when both selects have a value
+                function checkCompareButton() {
+                    compareBtn.disabled = !select1.value || !select2.value || select1.value === select2.value;
+                }
+                
+                select1.addEventListener('change', checkCompareButton);
+                select2.addEventListener('change', checkCompareButton);
+                
+                // Add click handler to compare button
+                compareBtn.onclick = function() {
+                    if (select1.value && select2.value && select1.value !== select2.value) {
+                        compareAnalyses(Number(select1.value), Number(select2.value));
+                    }
+                };
+            }
+        }
+    }
+    
+    // Function to compare two analyses
+    function compareAnalyses(analysis1Id, analysis2Id) {
+        if (window.AnalysisDB && window.AnalysisDB.db && window.AnalysisDB.ui) {
+            const comparisonResults = document.getElementById('comparison-results');
+            if (comparisonResults) {
+                // Show loading indicator
+                comparisonResults.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Generating comparison...</p>
+                    </div>
+                `;
+                
+                // Perform the comparison
+                window.AnalysisDB.db.compareAnalyses(analysis1Id, analysis2Id)
+                    .then((comparison) => {
+                        window.AnalysisDB.ui.renderComparison(comparison, comparisonResults);
+                    })
+                    .catch((error) => {
+                        console.error('Error comparing analyses:', error);
+                        comparisonResults.innerHTML = `
+                            <div class="alert alert-danger">
+                                <h5>Error Comparing Analyses</h5>
+                                <p>${error.message || 'An unknown error occurred'}</p>
+                            </div>
+                        `;
+                    });
+            }
+        }
+    }
+    
+    // Function to initialize visualization
+    function initializeVisualization(analysis, contractCode) {
+        if (window.ContractVisualization && window.ContractVisualization.renderContractRiskHeatmap) {
+            // Add a listener to the visualization tab
+            const visualizationTab = document.getElementById('visualization-tab');
+            const visualizationContainer = document.getElementById('contractVisualization');
+            
+            if (visualizationTab && visualizationContainer) {
+                // Initialize visualization when tab is clicked
+                visualizationTab.addEventListener('shown.bs.tab', function() {
+                    window.ContractVisualization.renderContractRiskHeatmap(analysis, contractCode, 'contractVisualization');
+                });
+                
+                // Also render if we're already on the visualization tab
+                if (visualizationTab.classList.contains('active')) {
+                    window.ContractVisualization.renderContractRiskHeatmap(analysis, contractCode, 'contractVisualization');
+                }
+            }
+        }
+    }
+    
+    // Function to initialize educational content
+    function initializeEducationalContent(analysis) {
+        if (window.SmartContractEducation && window.SmartContractEducation.ui) {
+            const educationTab = document.getElementById('education-tab');
+            const educationalContainer = document.getElementById('educational-container');
+            
+            if (educationTab && educationalContainer) {
+                // Initialize educational content when tab is clicked
+                educationTab.addEventListener('shown.bs.tab', function() {
+                    window.SmartContractEducation.ui.renderEducationalDashboard(educationalContainer);
+                });
+            }
+        }
+    }
+    
+    // Initialize chat functionality
+    function initializeChat() {
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatTab = document.getElementById('chat-tab');
+        
+        if (chatForm && chatInput && chatMessages) {
+            // Load current contract's chat if available
+            if (window.currentContractName && window.currentAnalysis) {
+                loadContractChat(window.currentContractName);
+            }
+            
+            // Update contract chat history
+            updateContractChatHistory();
+            
+            // Handle form submission
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!window.currentContractName || !window.currentAnalysis) {
+                    appendChatMessage('assistant', 'Please analyze a smart contract first to start a conversation.', false);
+                    return;
+                }
+                
+                const message = chatInput.value.trim();
+                if (!message) return;
+                
+                // Add user message to chat
+                appendChatMessage('user', message);
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Generate a response based on the current analysis
+                generateChatResponse(message, window.currentAnalysis);
+            });
+            
+            // Add chat tab click event to update history
+            if (chatTab) {
+                chatTab.addEventListener('shown.bs.tab', function() {
+                    updateContractChatHistory();
+                    if (window.currentContractName && window.currentAnalysis) {
+                        loadContractChat(window.currentContractName);
+                    }
+                });
+            }
+        }
+    }
+    
+    // Function to append a message to the chat
+    function appendChatMessage(sender, content, saveToDB = true) {
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatMessages) return;
+        
+        const messageEl = document.createElement('div');
+        messageEl.className = `chat-message ${sender}-message`;
+        
+        // Format code blocks if present
+        const formattedContent = formatMessageContent(content);
+        
+        if (sender === 'user') {
+            messageEl.innerHTML = `
+                <div class="p-3 mb-2 bg-primary text-white rounded float-end chat-bubble">
+                    <p class="mb-0">${formattedContent}</p>
+                </div>
+                <div class="clearfix"></div>
+            `;
+        } else {
+            messageEl.innerHTML = `
+                <div class="p-3 mb-2 bg-light rounded chat-bubble">
+                    <p class="mb-0">${formattedContent}</p>
+                </div>
+            `;
+        }
+        
+        chatMessages.appendChild(messageEl);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Function to format message content with code blocks
+    function formatMessageContent(content) {
+        if (!content) return '';
+        
+        // Replace code blocks with formatted HTML
+        let formattedContent = content;
+        
+        // Format ```code``` blocks
+        formattedContent = formattedContent.replace(/```([\s\S]*?)```/g, '<pre class="code-block p-2 rounded bg-dark text-light"><code>$1</code></pre>');
+        
+        // Format inline `code` snippets
+        formattedContent = formattedContent.replace(/`([^`]+)`/g, '<code class="p-1 rounded bg-dark text-light">$1</code>');
+        
+        // Replace newlines with <br>
+        formattedContent = formattedContent.replace(/\n/g, '<br>');
+        
+        return formattedContent;
+    }
+    
+    // Function to save chat history to local storage
+    function saveChatHistory() {
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatMessages) return;
+        
+        const messages = [];
+        const userMessages = chatMessages.querySelectorAll('.user-message .chat-bubble p');
+        const assistantMessages = chatMessages.querySelectorAll('.assistant-message .chat-bubble p');
+        
+        // Build messages array (this is simplistic and could be improved)
+        for (let i = 0; i < Math.max(userMessages.length, assistantMessages.length); i++) {
+            if (i < userMessages.length) {
+                messages.push({
+                    sender: 'user',
+                    content: userMessages[i].textContent
+                });
+            }
+            
+            if (i < assistantMessages.length) {
+                messages.push({
+                    sender: 'assistant',
+                    content: assistantMessages[i].textContent
+                });
+            }
+        }
+        
+        localStorage.setItem('smartContractChatHistory', JSON.stringify(messages));
+    }
+    
+    // Function to generate a response based on the analysis using the AI API
+    function generateChatResponse(userMessage, analysis) {
+        // Check if we have analysis data
+        if (!analysis) {
+            appendChatMessage('assistant', 'Please analyze a smart contract first so I can provide specific insights about it.');
+            return;
+        }
+
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'typing-indicator';
+        typingIndicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        
+        const chatMessages = document.getElementById('chat-messages');
+        if (chatMessages) {
+            chatMessages.appendChild(typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Create the context for the AI model
+        const prompt = {
+            contractName: window.currentContractName || 'Contract',
+            contractCode: window.currentContractCode || '',
+            analysis: JSON.stringify(analysis),
+            userMessage: userMessage
+        };
+
+        // Call the chat API endpoint
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: `You're analyzing a Solidity smart contract called ${prompt.contractName}. Here's the security analysis results: ${prompt.analysis}. User question: ${prompt.userMessage}. Provide a helpful, specific response about this contract's security.`
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Remove typing indicator
+            if (typingIndicator && typingIndicator.parentNode) {
+                typingIndicator.remove();
+            }
+            
+            // Display the AI response
+            if (data && data.response) {
+                appendChatMessage('assistant', data.response);
+                
+                // Save chat history with contract association
+                saveChatWithContractAssociation(userMessage, data.response);
+            } else {
+                throw new Error('Invalid response from chat API');
+            }
+        })
+        .catch(error => {
+            console.error('Error calling chat API:', error);
+            
+            // Remove typing indicator
+            if (typingIndicator && typingIndicator.parentNode) {
+                typingIndicator.remove();
+            }
+            
+            // Fallback to a generic response
+            appendChatMessage('assistant', 'I apologize, but I encountered an issue while generating a response. Could you try asking again or rephrasing your question?');
+        });
+    }
+    
+    // Function to save chat with contract association
+    function saveChatWithContractAssociation(userMessage, aiResponse) {
+        if (!window.currentContractName) return;
+        
+        // Get existing chat history or initialize a new one
+        const chatStorage = localStorage.getItem('smartContractChats') || '{}';
+        let contractChats;
+        
+        try {
+            contractChats = JSON.parse(chatStorage);
+        } catch (e) {
+            console.error('Error parsing chat storage:', e);
+            contractChats = {};
+        }
+        
+        // Initialize this contract's chat if it doesn't exist
+        if (!contractChats[window.currentContractName]) {
+            contractChats[window.currentContractName] = [];
+        }
+        
+        // Add the new messages to this contract's chat
+        contractChats[window.currentContractName].push(
+            {
+                sender: 'user',
+                content: userMessage,
+                timestamp: new Date().toISOString()
+            },
+            {
+                sender: 'assistant',
+                content: aiResponse,
+                timestamp: new Date().toISOString()
+            }
+        );
+        
+        // Save back to localStorage
+        localStorage.setItem('smartContractChats', JSON.stringify(contractChats));
+        
+        // Update contract chat history UI if it exists
+        updateContractChatHistory();
+    }
+    
+    // Function to update contract chat history UI
+    function updateContractChatHistory() {
+        const chatHistoryList = document.getElementById('chat-history-list');
+        if (!chatHistoryList) return;
+        
+        // Clear existing list
+        chatHistoryList.innerHTML = '';
+        
+        // Get all contract chats
+        const chatStorage = localStorage.getItem('smartContractChats') || '{}';
+        let contractChats;
+        
+        try {
+            contractChats = JSON.parse(chatStorage);
+        } catch (e) {
+            console.error('Error parsing chat storage:', e);
+            contractChats = {};
+        }
+        
+        const contractNames = Object.keys(contractChats);
+        
+        if (contractNames.length === 0) {
+            chatHistoryList.innerHTML = '<div class="p-3 text-muted"><i>No chat history available</i></div>';
+            return;
+        }
+        
+        // Create list items for each contract chat
+        contractNames.forEach(contractName => {
+            const chatCount = contractChats[contractName].filter(msg => msg.sender === 'user').length;
+            const lastChat = new Date(contractChats[contractName][contractChats[contractName].length - 1].timestamp);
+            
+            const item = document.createElement('div');
+            item.className = 'chat-history-item';
+            if (window.currentContractName === contractName) {
+                item.classList.add('active');
+            }
+            
+            item.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold">${contractName}</div>
+                        <small class="text-muted">${chatCount} messages · ${lastChat.toLocaleString()}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger delete-chat-btn" data-contract="${contractName}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Add click event to load this chat
+            item.addEventListener('click', function(e) {
+                if (!e.target.closest('.delete-chat-btn')) {
+                    loadContractChat(contractName);
+                }
+            });
+            
+            chatHistoryList.appendChild(item);
+        });
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-chat-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const contractName = this.dataset.contract;
+                if (contractName) {
+                    deleteContractChat(contractName);
+                }
+            });
+        });
+    }
+    
+    // Function to load a specific contract's chat
+    function loadContractChat(contractName) {
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatMessages) return;
+        
+        // Clear existing messages
+        chatMessages.innerHTML = '';
+        
+        // Get contract chats
+        const chatStorage = localStorage.getItem('smartContractChats') || '{}';
+        let contractChats;
+        
+        try {
+            contractChats = JSON.parse(chatStorage);
+        } catch (e) {
+            console.error('Error parsing chat storage:', e);
+            return;
+        }
+        
+        // If this contract has chat history, load it
+        if (contractChats[contractName] && contractChats[contractName].length > 0) {
+            contractChats[contractName].forEach(message => {
+                appendChatMessage(message.sender, message.content, false);
+            });
+        } else {
+            // Start with a greeting
+            appendChatMessage('assistant', `I'm here to help with your ${contractName} smart contract. What would you like to know?`, false);
+        }
+        
+        // Update active state in history list
+        const historyItems = document.querySelectorAll('.chat-history-item');
+        historyItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.querySelector('.fw-bold').textContent === contractName) {
+                item.classList.add('active');
+            }
+        });
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Function to delete a contract's chat
+    function deleteContractChat(contractName) {
+        if (!contractName) return;
+        
+        // Get contract chats
+        const chatStorage = localStorage.getItem('smartContractChats') || '{}';
+        let contractChats;
+        
+        try {
+            contractChats = JSON.parse(chatStorage);
+            
+            // Delete this contract's chat
+            if (contractChats[contractName]) {
+                delete contractChats[contractName];
+                
+                // Save back to localStorage
+                localStorage.setItem('smartContractChats', JSON.stringify(contractChats));
+                
+                // Update UI
+                updateContractChatHistory();
+                
+                // Clear chat display if we were viewing this contract
+                if (window.currentContractName === contractName) {
+                    const chatMessages = document.getElementById('chat-messages');
+                    if (chatMessages) {
+                        chatMessages.innerHTML = '';
+                        appendChatMessage('assistant', 'Chat history was deleted. What would you like to know about your smart contract?', false);
+                    }
+                }
+                
+                showAlert(`Chat history for ${contractName} has been deleted`, 'success');
+            }
+        } catch (e) {
+            console.error('Error deleting chat:', e);
+            showAlert('Error deleting chat history', 'danger');
+        }
+    }
+    
+    // Initialize features when DOM is loaded
+    function initializeFeatures() {
+        // Initialize analysis database
+        if (window.AnalysisDB && window.AnalysisDB.db) {
+            window.AnalysisDB.db.init()
+                .then(() => {
+                    console.log('Analysis database initialized');
+                    refreshAnalysisHistoryList();
+                })
+                .catch(error => {
+                    console.error('Error initializing analysis database:', error);
+                });
+        }
+        
+        // Initialize educational content when education tab is clicked
+        const educationTab = document.getElementById('education-tab');
+        const educationalContainer = document.getElementById('educational-container');
+        if (educationTab && educationalContainer && window.SmartContractEducation) {
+            educationTab.addEventListener('shown.bs.tab', function() {
+                window.SmartContractEducation.ui.renderEducationalDashboard(educationalContainer);
+            });
+        }
+        
+        // Initialize chat functionality
+        initializeChat();
+    }
+    
+    // Call initialization
+    initializeFeatures();
 });
