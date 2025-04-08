@@ -19,7 +19,7 @@ describe('Service Tests', () => {
             const expectedData = { version, name }
 
             // Act
-            const response = await request(app).get('/app/version')
+            const response = await request(app).get('/api/app/version')
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS_CODES.OK)
@@ -31,7 +31,7 @@ describe('Service Tests', () => {
             const expectedData = { message: 'OK' }
 
             // Act
-            const response = await request(app).get('/app/health-check')
+            const response = await request(app).get('/api/app/health-check')
 
             // Assert
             expect(response.status).toBe(HTTP_STATUS_CODES.OK)
@@ -91,7 +91,7 @@ describe('Service Tests', () => {
         test('detect success', async () => {
             // Act
             const response = await request(app)
-                .post('/detect')
+                .post('/api/detection')
                 .send(requestPayload)
                 .set('Content-Type', 'application/json')
 
@@ -107,7 +107,7 @@ describe('Service Tests', () => {
 
         test('detect validation', async () => {
             const response = await request(app)
-                .post('/detect')
+                .post('/api/detection')
                 .send({ ...requestPayload, protocolAddress: 'definitely not address' })
                 .set('Content-Type', 'application/json')
 
@@ -116,7 +116,7 @@ describe('Service Tests', () => {
 
         test('detect validation nested', async () => {
             const response = await request(app)
-                .post('/detect')
+                .post('/api/detection')
                 .send({
                     ...requestPayload,
                     trace: {
