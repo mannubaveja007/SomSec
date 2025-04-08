@@ -1,7 +1,7 @@
 import { name, version } from '@root/package.json'
 import request from 'supertest'
 
-import { app, server } from '@root/api/app'
+import { app, server } from '@/app'
 import { DetectionRequest, DetectionResponse } from '@/modules/detection-module/dtos'
 import { HTTP_STATUS_CODES } from '@/types'
 
