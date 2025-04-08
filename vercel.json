@@ -12,6 +12,10 @@
   ],
   "routes": [
     {
+      "src": "/api/detection/analyze-contract",
+      "dest": "api/analyze.js"
+    },
+    {
       "src": "/api/detection/(.*)",
       "dest": "api/app.ts?path=detection/$1"
     },

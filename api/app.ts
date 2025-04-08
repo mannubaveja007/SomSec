@@ -4,9 +4,10 @@ import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import { URL } from 'url';
 
-// Import your existing router and helper functions
-import { createLogger } from '@/helpers';
-import { router } from '@/router';
+// Use direct relative imports instead of alias paths
+// These will work better in Vercel's serverless environment
+import { createLogger } from '../src/helpers';
+import { router } from '../src/router';
 
 // Configure environment
 dotenv.config();
