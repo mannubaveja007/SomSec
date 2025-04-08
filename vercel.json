@@ -12,8 +12,12 @@
   ],
   "routes": [
     {
+      "src": "/api/detection/(.*)",
+      "dest": "api/app.ts?path=detection/$1"
+    },
+    {
       "src": "/api/(.*)",
-      "dest": "api/app.ts"
+      "dest": "api/app.ts?path=$1"
     },
     {
       "src": "/(.*)",

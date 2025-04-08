@@ -504,7 +504,16 @@ contract VulnerableBank {
         const requestBody = JSON.stringify(requestData);
         console.log('Request payload created, payload size:', requestBody.length);
         
-        fetch('/api/detection/analyze-contract', {
+        // Get API base URL - use window.debugHelpers if available
+        const apiUrl = window.debugHelpers ? 
+            window.debugHelpers.logApiRequest('/api/detection/analyze-contract', 'POST') : 
+            '/api/detection/analyze-contract';
+            
+        // Add timestamp to prevent caching issues
+        const fullUrl = `${apiUrl}${apiUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+        console.log('Making API request to:', fullUrl);
+        
+        fetch(fullUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
