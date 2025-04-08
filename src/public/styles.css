@@ -195,6 +195,62 @@ language-json{
             border-radius: 3px;
         }
         
+        /* API Documentation code blocks */
+        .modal-body pre {
+            background-color: #1e1e1e;
+            color: #61afef; /* Blue text */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 1px solid #333;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+        
+        .modal-body pre code {
+            color: inherit;
+            background-color: transparent;
+            padding: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* JSON syntax highlighting */
+        .modal-body .language-json .hljs-attr,
+        .modal-body .language-json .hljs-property {
+            color: #e06c75; /* Red for property names */
+        }
+        
+        .modal-body .language-json .hljs-string {
+            color: #98c379; /* Green for strings */
+        }
+        
+        .modal-body .language-json .hljs-comment {
+            color: #7f848e; /* Gray for comments */
+            font-style: italic;
+        }
+        
+        /* Bash/cURL syntax highlighting */
+        .modal-body .language-bash .hljs-built_in,
+        .modal-body .language-bash .hljs-keyword {
+            color: #c678dd; /* Purple for commands */
+        }
+        
+        .modal-body .language-bash .hljs-string,
+        .modal-body .language-bash .hljs-number {
+            color: #98c379; /* Green for strings */
+        }
+        
+        .modal-body .language-bash .hljs-variable {
+            color: #e06c75; /* Red for variables */
+        }
+        
+        /* HTTP syntax highlighting */
+        .modal-body .language-http {
+            color: #56b6c2; /* Cyan for HTTP methods */
+            font-weight: bold;
+        }
+        
         .tab-content {
             border: 1px solid #dee2e6;
             border-top: none;
@@ -243,9 +299,11 @@ language-json{
         .api-card pre {
             margin-bottom: 0;
             font-size: 0.85rem;
-            background-color: #f8f9fa;
+            background-color: #1e1e1e;
+            color: #61afef; /* Blue text */
             border-radius: 0.5rem;
             padding: 1rem;
+            border: 1px solid #333;
         }
         
         #riskAlert {
