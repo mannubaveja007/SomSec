@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer'
 import { Request, Response } from 'express'
 
-import { logger } from '@/app'
+import { logger } from '@root/api/app'
 import { ErrorHandler, validateRequest } from '@/helpers'
 import { DetectionRequest, toDetectionResponse } from '@/modules/detection-module/dtos'
 import { DetectionService } from '@/modules/detection-module/service'

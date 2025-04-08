@@ -1,6 +1,6 @@
 import { Response } from 'express'
 
-import { logger } from '@/app'
+import { logger } from '@root/api/app'
 import { errors } from '@/errors'
 import { RequestError } from '@/errors/http.errors'
 
