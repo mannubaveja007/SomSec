@@ -1,179 +1,200 @@
-![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
-![Jest](https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white)
-![Yarn](https://img.shields.io/badge/yarn-%232C8EBB.svg?style=for-the-badge&logo=yarn&logoColor=white)
+# Smart Contract Security Analysis Tool
 
-# AI Smart Contract Vulnerability Detector
-An advanced smart contract vulnerability detection system built on the Venn Custom Detector boilerplate. This system utilizes Together AI to analyze smart contracts for security vulnerabilities and provide detailed reports.
+An AI-powered security analysis tool for Ethereum smart contracts that helps developers identify and fix vulnerabilities before deployment.
 
-> 📚 [What is Venn?](https://docs.venn.build/)
+## Overview
 
-## Table of Contents
-- [Introduction](#ai-smart-contract-vulnerability-detector)
-- [Features](#-features)
-- [Quick Start](#quick-start)
-- [What's inside?](#-whats-inside)
-- [Local development:](#️-local-development)
-- [API Reference](#-api-reference)
-- [Deploy to production](#-deploy-to-production)
+This application uses advanced AI (Together AI with meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8) to analyze Solidity smart contracts and detect potential security vulnerabilities. It provides detailed analysis with risk levels, specific vulnerability identification, and recommendations for making your contracts more secure.
 
-## ✅ Features
-- **AI-Powered Analysis**: Uses Together AI's advanced language models to detect vulnerabilities in smart contracts
-- **Detailed Reports**: Provides comprehensive analysis with severity ratings and fix recommendations
-- **Beautiful UI**: Modern web interface for submitting contracts and viewing results
-- **API Access**: Fully documented API for integrating the vulnerability detection into other tools
-- **Multiple Vulnerability Detection**: Identifies various common vulnerabilities including:
-  - Reentrancy attacks
-  - Access control vulnerabilities
-  - Integer overflow/underflow
-  - Timestamp dependence
-  - Front-running vulnerabilities
-  - And many more
+## Key Features
 
-## ✨ Quick start
-1. Clone this repo and install dependencies using `npm install`
-2. Create a `.env` file with your Together AI API key (see [Environment Setup](#-local-development))
-3. Run `npm run dev` to start the development server
-4. Access the web interface at `http://localhost:3000`
+- **Smart Contract Analysis**: Analyze Solidity code to detect vulnerabilities and security risks
+- **Risk Assessment**: Get an overall risk score and detailed breakdown of identified issues
+- **Vulnerability Visualization**: View a heatmap of your contract showing risk areas
+- **Comparison Tool**: Compare analyses of different versions of contracts
+- **Educational Resources**: Learn about smart contract security best practices
+- **Interactive AI Chat**: Ask questions about your contract's security and get AI-powered answers
+- **API Integration**: Use our API for integration into your development workflow
 
-    ```ts
-    import { DetectionResponse, DetectionRequest } from './dtos'
+## Getting Started
 
-    /**
-     * DetectionService
-     *
-     * Implements a `detect` method that receives an enriched view of an
-     * EVM compatible transaction (i.e. `DetectionRequest`)
-     * and returns a `DetectionResponse`
-     *
-     * API Reference:
-     * https://github.com/ironblocks/venn-custom-detection/blob/master/docs/requests-responses.docs.md
-     */
-    export class DetectionService {
-        /**
-         * Update this implementation code to insepct the `DetectionRequest`
-         * based on your custom business logic
-         */
-        public static detect(request: DetectionRequest): DetectionResponse {
-            
-            /**
-             * For this "Hello World" style boilerplate
-             * we're mocking detection results using
-             * some random value
-             */
-            const detectionResult = Math.random() < 0.5;
+### Prerequisites
 
+- Node.js (v14 or higher)
+- npm or yarn
+- Together AI API key
 
-            /**
-             * Wrap our response in a `DetectionResponse` object
-             */
-            return new DetectionResponse({
-                request,
-                detectionInfo: {
-                    detected: detectionResult,
-                },
-            });
-        }
-    }
-    ```
+### Installation
 
-3. Implement your own logic in the `detect` method
-4. Run `yarn dev` _(or `npm run dev`)_
-5. That's it! Your custom detector service is now ready to inspect transaction
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/smart-contract-security-analysis.git
+   cd smart-contract-security-analysis
+   ```
 
-## 📦 What's inside?
-This application is built using `Express.js`, and written in `TypeScript` using `NodeJS`. It includes:
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-- **Together AI Integration**: Analyzes smart contracts using Together AI's language models
-- **Modern UI**: Responsive web interface built with Bootstrap 5
-- **RESTful API**: Well-documented API for programmatic access
-- **Detailed Vulnerability Reports**: Comprehensive analysis with actionable insights
+3. Create a `.env` file in the root directory with your Together AI API key:
+   ```
+   TOGETHER_API_KEY=your_api_key_here
+   PORT=3000
+   ```
 
-**Supported Smart Contract Analysis**:
-- Comprehensive vulnerability detection for Solidity smart contracts
-- Security analysis based on industry best practices
-- Actionable recommendations for fixing vulnerabilities
+4. Start the development server:
+   ```
+   npm start
+   ```
 
-## 🛠️ Local Development
+5. Open your browser and navigate to `http://localhost:3000`
 
-**Environment Setup**
+## Usage Guide
 
-Create a `.env` file with:
+### Analyzing a Smart Contract
 
-```bash
-PORT=3000
-HOST=localhost
-LOG_LEVEL=debug
-TOGETHER_API_KEY=your_together_api_key_here  # Get this from https://api.together.xyz/
-```
+1. Paste your Solidity smart contract code into the input area
+2. Click the "Analyze Contract" button
+3. View the analysis results, including:
+   - Overall risk assessment
+   - Detailed vulnerability breakdown
+   - Code-specific recommendations
 
-**Running In Dev Mode**
-```bash
-npm install
-npm run dev
-```
+### Using the Chat Assistant
 
-## 📘 API Reference
+1. Analyze a contract to activate the chat functionality
+2. Navigate to the Chat tab
+3. Ask questions about your contract's security
+4. Get AI-generated responses specifically tailored to your contract
+
+### Comparing Contracts
+
+1. Save multiple contract analyses
+2. Go to the Comparison tab
+3. Select two analyses to compare
+4. View the differences in vulnerabilities, recommendations, and risk levels
+
+### Visualization
+
+The Visualization tab provides a heatmap of your contract code, highlighting areas of high, medium, and low risk to help you visually identify problem areas.
+
+## API Documentation
 
 ### Smart Contract Analysis Endpoint
 
-```http
+```
 POST /api/detection/analyze-contract
 ```
 
-**Request Body:**
-
+Request Body:
 ```json
 {
-  "contractName": "string", // Name of the contract
-  "contractCode": "string"  // Full Solidity contract code
+  "contractName": "YourContractName",
+  "contractCode": "Your Solidity code here..."
 }
 ```
 
-**Response:**
-
+Response:
 ```json
 {
+  "contractName": "YourContractName",
+  "overallRisk": "Medium",
+  "summary": "Summary of findings",
   "vulnerabilities": [
     {
-      "type": "string",     // Type of vulnerability (e.g., "Reentrancy")
-      "severity": "string", // "High", "Medium", or "Low"
-      "description": "string", // Detailed description
-      "location": "string", // Function or section with the vulnerability
-      "recommendation": "string" // Fix recommendation
+      "type": "Reentrancy",
+      "severity": "High",
+      "description": "Description of vulnerability",
+      "location": "function withdraw()",
+      "lineNumbers": [45, 52],
+      "recommendation": "Use ReentrancyGuard or checks-effects-interactions pattern"
     }
   ],
-  "overallRisk": "string", // "High", "Medium", "Low", or "Safe"
-  "summary": "string"      // Brief summary of findings
+  "recommendations": {
+    "immediate": ["Fix reentrancy in withdraw function"],
+    "consideration": ["Consider using OpenZeppelin's SafeMath"]
+  }
 }
 ```
 
-**Example Request:**
+### Chat Endpoint
 
-```bash
-curl -X POST http://localhost:3000/api/detection/analyze-contract \
-     -H "Content-Type: application/json" \
-     -d '{
-       "contractName": "SimpleStorage",
-       "contractCode": "pragma solidity ^0.8.0;\n\ncontract SimpleStorage {\n    uint256 private storedData;\n\n    function set(uint256 x) public {\n        storedData = x;\n    }\n\n    function get() public view returns (uint256) {\n        return storedData;\n    }\n}"
-     }'
+```
+POST /api/chat
 ```
 
-## 🚀 Deploy To Production
-
-**Manual Build**
-
-```bash
-yarn build      # or npm run build
-yarn start      # or npm run start
+Request Body:
+```json
+{
+  "prompt": "Ask a question about the contract or security best practices"
+}
 ```
 
-
-**Using Docker**
-```bash
-docker build -f Dockerfile . -t my-custom-detector
+Response:
+```json
+{
+  "response": "AI-generated response to your question"
+}
 ```
 
+## Test Cases
+
+### Test Case 1: Basic ERC20 Contract
+
+**Input**: Standard ERC20 token contract
+**Expected Results**: 
+- Low to Medium risk assessment
+- Identification of any missing access controls
+- Recommendations for adding proper access control mechanisms
+
+### Test Case 2: Contract with Reentrancy Vulnerability
+
+**Input**: Contract with `call.value()` before state changes
+**Expected Results**:
+- High risk assessment
+- Identification of reentrancy vulnerability
+- Recommendation to implement checks-effects-interactions pattern
+
+### Test Case 3: Contract with Integer Overflow
+
+**Input**: Contract with unchecked arithmetic operations
+**Expected Results**:
+- Medium to High risk assessment
+- Identification of potential overflow/underflow issues
+- Recommendation to use SafeMath or Solidity 0.8+ built-in overflow checks
+
+### Test Case 4: Contract with Timestamp Dependency
+
+**Input**: Contract using `block.timestamp` for critical decisions
+**Expected Results**:
+- Medium risk assessment
+- Warning about miner manipulation of timestamps
+- Recommendation for more secure time-handling strategies
+
+## Technology Stack
+
+- **Frontend**: HTML, CSS, JavaScript, Bootstrap 5
+- **Backend**: Node.js, Express
+- **AI Integration**: Together AI (meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8)
+- **Visualization**: D3.js for vulnerability heatmap
+
+## Contributing
+
+We welcome contributions to improve this tool! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature-name`)
+3. Commit your changes (`git commit -m 'Add some feature'`)
+4. Push to the branch (`git push origin feature/your-feature-name`)
+5. Create a new Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Together AI for providing the AI model
+- OpenZeppelin for smart contract security best practices
+- The Ethereum community for valuable feedback and testing
