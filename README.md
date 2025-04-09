@@ -1,12 +1,33 @@
-# Smart Contract Security Analysis Tool
+# VENN Smart Contract Security Analysis Tool
 
-An AI-powered security analysis tool for Ethereum smart contracts that helps developers identify and fix vulnerabilities before deployment.
+A powerful AI-driven security analysis tool for Ethereum smart contracts, helping developers identify and fix vulnerabilities before deployment.
+
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+  - [Development Mode](#development-mode)
+  - [Production Mode](#production-mode)
+- [Testing](#testing)
+- [Frontend Navigation](#frontend-navigation)
+- [Usage Guide](#usage-guide)
+- [API Documentation](#api-documentation)
+- [Test Cases](#test-cases)
+- [Technology Stack](#technology-stack)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 ## Overview
 
-This application uses advanced AI (Together AI with meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8) to analyze Solidity smart contracts and detect potential security vulnerabilities. It provides detailed analysis with risk levels, specific vulnerability identification, and recommendations for making your contracts more secure.
+VENN Smart Contract Security Analysis Tool leverages advanced AI (Together AI with meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8) to analyze Solidity smart contracts and detect potential security vulnerabilities. It provides detailed security analysis with risk levels, specific vulnerability identification, and recommendations for enhancing contract security.
 
-## Key Features
+## Features
 
 - **Smart Contract Analysis**: Analyze Solidity code to detect vulnerabilities and security risks
 - **Risk Assessment**: Get an overall risk score and detailed breakdown of identified issues
@@ -16,39 +37,170 @@ This application uses advanced AI (Together AI with meta-llama/Llama-4-Maverick-
 - **Interactive AI Chat**: Ask questions about your contract's security and get AI-powered answers
 - **API Integration**: Use our API for integration into your development workflow
 
-## Getting Started
+## Project Structure
 
-### Prerequisites
+```
+venn-smart-contract/
+├── .git/                   # Git repository
+├── src/                    # Source code
+│   ├── app.ts              # Main application entry point
+│   ├── router.ts           # Main router configuration
+│   ├── errors/             # Error handling
+│   ├── helpers/            # Helper utilities
+│   ├── modules/            # Feature modules
+│   │   ├── app-module/     # Core application module
+│   │   └── detection-module/  # Smart contract detection module
+│   ├── public/             # Static files for frontend
+│   │   ├── css/            # Stylesheets
+│   │   ├── js/             # Frontend JavaScript
+│   │   └── images/         # Images and icons
+│   ├── routes/             # API routes
+│   ├── tests/              # Unit tests within src
+│   └── types/              # TypeScript type definitions
+├── tests/                  # Integration tests
+├── docs/                   # Documentation files
+├── .env.example            # Example environment variables
+├── package.json            # Project dependencies and scripts
+└── tsconfig.json           # TypeScript configuration
+```
+
+## Prerequisites
 
 - Node.js (v14 or higher)
 - npm or yarn
 - Together AI API key
 
-### Installation
+## Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/smart-contract-security-analysis.git
-   cd smart-contract-security-analysis
+   ```bash
+   git clone https://github.com/your-username/venn-smart-contract.git
+   cd venn-smart-contract
    ```
 
 2. Install dependencies:
-   ```
+   ```bash
    npm install
+   # or with yarn
+   yarn install
    ```
 
-3. Create a `.env` file in the root directory with your Together AI API key:
+3. Create a `.env` file in the root directory with your configuration:
    ```
-   TOGETHER_API_KEY=your_api_key_here
    PORT=3000
+   HOST=localhost
+   LOG_LEVEL=trace
+   TOGETHER_API_KEY=your_api_key_here
    ```
 
-4. Start the development server:
-   ```
-   npm start
+## Running the Application
+
+### Backend Setup
+
+The backend server provides API endpoints for smart contract analysis and security checks.
+
+1. Development mode with hot-reloading:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
    ```
 
-5. Open your browser and navigate to `http://localhost:3000`
+2. Build the application:
+   ```bash
+   npm run build
+   # or
+   yarn build
+   ```
+
+3. Preview the built application:
+   ```bash
+   npm run preview
+   # or
+   yarn preview
+   ```
+
+4. Production mode:
+   ```bash
+   npm run start
+   # or
+   yarn start
+   ```
+
+The server will be accessible at `http://localhost:3000` (or the port you specified in the .env file).
+
+### Frontend Setup
+
+The frontend is served from the Express backend and includes HTML, CSS, and JavaScript files in the `src/public` directory.
+
+1. After starting the backend server, the frontend will be automatically available at the same address (`http://localhost:3000`).
+
+2. No separate frontend server is needed as the web interface is served directly from the backend.
+
+### Development Mode
+
+During development, the application will automatically reload when you make changes to the source code. This is handled by nodemon configuration.
+
+Changes to frontend files in the `src/public` directory will be available on browser refresh.
+
+### Production Mode
+
+For production deployment:
+
+1. Build the application:
+   ```bash
+   npm run build
+   # or
+   yarn build
+   ```
+
+2. Start the production server:
+   ```bash
+   npm run start
+   # or
+   yarn start
+   ```
+
+## Testing
+
+Run the test suite with:
+
+```bash
+npm run test
+# or
+yarn test
+```
+
+For continuous testing during development:
+
+```bash
+npm run test:watch
+# or
+yarn test:watch
+```
+
+The test suite includes:
+
+- API endpoint tests
+- Smart contract detection functionality tests
+- Integration tests for the full analysis workflow
+
+## Frontend Navigation
+
+The web interface provides several sections for analyzing smart contracts:
+
+1. **Home Page**: Upload or paste your Solidity smart contract
+2. **Analysis Dashboard**: View the comprehensive security analysis after submitting a contract:
+   - Overall risk score
+   - Vulnerability breakdown by category
+   - Code with highlighted risk areas
+   - Detailed recommendations
+
+3. **Contract Comparison**: Compare different versions of your contracts to track security improvements
+
+4. **Learning Center**: Access educational resources about smart contract security
+
+5. **AI Chat**: Ask questions about your contract or general security best practices and receive AI-powered answers
 
 ## Usage Guide
 
