@@ -1,6 +1,7 @@
 import { DetectionRequest, DetectionResponse } from './dtos'
-import { Together } from 'together-ai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import dotenv from 'dotenv'
+import { getActiveNetwork } from '@/config/network'
 
 dotenv.config()
 
@@ -16,33 +17,40 @@ dotenv.config()
  * https://github.com/ironblocks/venn-custom-detection/blob/master/docs/requests-responses.docs.md
  */
 export class DetectionService {
-    private static togetherClient: Together | null = null;
+    private static geminiClient: GoogleGenerativeAI | null = null;
 
     /**
-     * Initialize the Together AI client
+     * Initialize the Gemini AI client
      */
-    private static initializeTogetherClient(): Together {
-        if (!this.togetherClient) {
-            const apiKey = process.env.TOGETHER_API_KEY;
+    private static initializeGeminiClient(): GoogleGenerativeAI {
+        if (!this.geminiClient) {
+            const apiKey = process.env.GEMINI_API_KEY;
             if (!apiKey) {
-                throw new Error('TOGETHER_API_KEY is not set in environment variables');
+                throw new Error('GEMINI_API_KEY is not set in environment variables');
             }
-            this.togetherClient = new Together({
-                apiKey: apiKey
-            });
+            this.geminiClient = new GoogleGenerativeAI(apiKey);
         }
-        return this.togetherClient;
+        return this.geminiClient;
     }
 
     /**
-     * Detect smart contract vulnerabilities using Together AI
+     * Detect smart contract vulnerabilities using Gemini AI
      */
-    public static async analyzeSmartContract(smartContractCode: string): Promise<any> {
+    public static async analyzeSmartContract(smartContractCode: string, contractName?: string): Promise<any> {
         try {
-            const client = this.initializeTogetherClient();
+            const client = this.initializeGeminiClient();
+            const model = client.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+            const network = getActiveNetwork();
 
             // Create a prompt for smart contract analysis with specific vulnerability classes
-            const prompt = `Analyze the following smart contract for vulnerabilities and security issues. Perform a balanced security audit focusing on truly significant risks that could allow developers or attackers to drain funds, disable withdrawals, or compromise contract integrity. Avoid flagging minor issues or standard patterns as serious vulnerabilities - focus only on meaningful security threats with real-world impact. Be conservative when labeling issues as high or critical severity.
+            const prompt = `Analyze the following smart contract for vulnerabilities and security issues on the ${network.name} (Chain ID: ${network.chainId}). This contract will be deployed on Somnia, an EVM-compatible blockchain.
+
+Perform a balanced security audit focusing on truly significant risks that could allow developers or attackers to drain funds, disable withdrawals, or compromise contract integrity. Avoid flagging minor issues or standard patterns as serious vulnerabilities - focus only on meaningful security threats with real-world impact. Be conservative when labeling issues as high or critical severity.
+
+${contractName ? `Contract Name: ${contractName}` : ''}
+Network: ${network.name} (${network.symbol})
+Chain ID: ${network.chainId}
+Block Explorer: ${network.explorerUrl}
 
 Perform a detailed analysis for these specific vulnerability classes:
 
@@ -210,24 +218,33 @@ Here is the smart contract to analyze:
 
 ${smartContractCode}`;
 
-            const response = await client.chat.completions.create({
-                model: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
-                messages: [{ role: "user", content: prompt }],
-                response_format: { type: "json_object" }
-            });
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
 
             try {
-                const content = response.choices[0]?.message?.content;
-                if (!content) {
-                    throw new Error('No content in AI response');
+                // Try to extract JSON from the response
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    const result = JSON.parse(jsonMatch[0]);
+                    return result;
+                } else {
+                    // If no JSON found, create a structured response
+                    return {
+                        vulnerabilities: [],
+                        overallRisk: "Unknown",
+                        summary: text.substring(0, 500) + "...",
+                        recommendations: {
+                            immediate: [],
+                            consideration: []
+                        }
+                    };
                 }
-                const result = JSON.parse(content);
-                return result;
             } catch (error) {
                 return {
                     error: true,
                     message: "Failed to parse AI response",
-                    content: response.choices[0]?.message?.content || 'No content available'
+                    content: text || 'No content available'
                 };
             }
         } catch (error) {

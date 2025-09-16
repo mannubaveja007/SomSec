@@ -12,7 +12,7 @@ const educationalContent = {
             examples: [
                 {
                     name: 'The DAO Hack',
-                    description: 'The infamous hack that led to the Ethereum hard fork, exploiting a reentrancy vulnerability to drain ~3.6M ETH.',
+                    description: 'The infamous hack that led to the Ethereum hard fork, exploiting a reentrancy vulnerability to drain ~3.6M ETH. This type of attack is also relevant on Somnia.',
                     code: `function withdrawBalance() {
     uint amountToWithdraw = userBalances[msg.sender];
     // This sends the money to the caller
@@ -36,7 +36,7 @@ const educationalContent = {
             examples: [
                 {
                     name: 'Parity Multi-Sig Wallet',
-                    description: 'The Parity Multi-Sig wallet hack where an unprotected initialization function allowed an attacker to take ownership and eventually freeze millions in ETH.',
+                    description: 'The Parity Multi-Sig wallet hack where an unprotected initialization function allowed an attacker to take ownership and eventually freeze millions in ETH. Similar vulnerabilities can occur on Somnia.',
                     code: `// The initWallet function had no access control
 function initWallet(address[] _owners, uint _required, uint _daylimit) {
     initDaylimit(_daylimit);
@@ -262,9 +262,9 @@ function getLatestPrice() public view returns (uint) {
             description: 'Smart Contract Weakness Classification and Test Cases'
         },
         {
-            name: 'Ethereum Smart Contract Security Best Practices',
+            name: 'Smart Contract Security Best Practices',
             url: 'https://ethereum.org/en/developers/docs/smart-contracts/security/',
-            description: 'Official Ethereum documentation on smart contract security'
+            description: 'Comprehensive documentation on smart contract security practices applicable to Somnia and other EVM chains'
         },
         {
             name: 'Trail of Bits Blog',

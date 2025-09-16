@@ -1,7 +1,7 @@
 {
-    "name": "venn-custom-detection",
+    "name": "somnia-smart-contract-analyzer",
     "version": "1.0.0",
-    "description": "Custom detector boilerplate",
+    "description": "AI-powered smart contract security analyzer for Somnia network",
     "scripts": {
         "dev": " nodemon",
         "build": "rimraf dist && cross-env NODE_ENV=production tsc && tsc-alias dist --outDir ./dist",
@@ -27,16 +27,21 @@
         "ext": "ts, js"
     },
     "dependencies": {
+        "@google/generative-ai": "^0.24.1",
+        "@headlessui/react": "^2.2.8",
+        "@heroicons/react": "^2.2.0",
+        "autoprefixer": "^10.4.21",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.1",
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",
         "express": "^4.19.2",
+        "framer-motion": "^12.23.13",
         "morgan": "^1.10.0",
         "node-fetch": "^2.7.0",
+        "postcss": "^8.5.6",
         "reflect-metadata": "^0.2.2",
-        "together": "^0.0.11",
-        "together-ai": "^0.13.0",
+        "tailwindcss": "^3.4.17",
         "winston": "^3.14.1"
     },
     "devDependencies": {

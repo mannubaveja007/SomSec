@@ -4,8 +4,9 @@ import request from 'supertest'
 import { app, server } from '@/app'
 import { DetectionRequest, DetectionResponse } from '@/modules/detection-module/dtos'
 import { HTTP_STATUS_CODES } from '@/types'
+import { SOMNIA_TESTNET } from '@/config/network'
 
-const ethereumAddress = '0xfdD055Cf3EaD343AD51f4C7d1F12558c52BaDFA5'
+const somniaAddress = '0xfdD055Cf3EaD343AD51f4C7d1F12558c52BaDFA5'
 const zeroAddress = '0x0000000000000000000000000000000000000000'
 
 describe('Service Tests', () => {
@@ -43,14 +44,14 @@ describe('Service Tests', () => {
         const requestPayload: Partial<DetectionRequest> = {
             id: 'unique-id',
             detectorName: 'test-detector',
-            chainId: 1,
+            chainId: SOMNIA_TESTNET.chainId,
             hash: 'some hash',
             protocolName: 'some protocol',
             protocolAddress: zeroAddress,
             trace: {
                 blockNumber: 12345,
-                from: ethereumAddress,
-                to: ethereumAddress,
+                from: somniaAddress,
+                to: somniaAddress,
                 transactionHash: 'some hash',
                 input: 'input',
                 output: 'output',
@@ -70,15 +71,15 @@ describe('Service Tests', () => {
                 },
                 logs: [
                     {
-                        address: ethereumAddress,
+                        address: somniaAddress,
                         data: '0x...',
                         topics: ['0x...'],
                     },
                 ],
                 calls: [
                     {
-                        from: ethereumAddress,
-                        to: ethereumAddress,
+                        from: somniaAddress,
+                        to: somniaAddress,
                         input: 'input',
                         output: 'output',
                         gasUsed: '100',

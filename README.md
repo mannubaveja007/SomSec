@@ -1,6 +1,6 @@
-# VENN Smart Contract Security Analysis Tool
+# Somnia Smart Contract Security Analyzer
 
-A powerful AI-driven security analysis tool for Ethereum smart contracts, helping developers identify and fix vulnerabilities before deployment.
+A powerful AI-driven security analysis tool for Somnia smart contracts, helping developers identify and fix vulnerabilities before deployment on the Somnia network.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -25,7 +25,7 @@ A powerful AI-driven security analysis tool for Ethereum smart contracts, helpin
 
 ## Overview
 
-VENN Smart Contract Security Analysis Tool leverages advanced AI (Together AI with meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8) to analyze Solidity smart contracts and detect potential security vulnerabilities. It provides detailed security analysis with risk levels, specific vulnerability identification, and recommendations for enhancing contract security.
+Somnia Smart Contract Security Analyzer leverages advanced AI (Google Gemini 1.5 Pro) to analyze Solidity smart contracts and detect potential security vulnerabilities on the Somnia network. It provides detailed security analysis with risk levels, specific vulnerability identification, and recommendations for enhancing contract security.
 
 ## Features
 
@@ -68,7 +68,7 @@ venn-smart-contract/
 
 - Node.js (v14 or higher)
 - npm or yarn
-- Together AI API key
+- Google Gemini API key
 
 ## Installation
 
@@ -90,7 +90,11 @@ venn-smart-contract/
    PORT=3000
    HOST=localhost
    LOG_LEVEL=trace
-   TOGETHER_API_KEY=your_api_key_here
+   GEMINI_API_KEY=your_gemini_api_key_here
+   SOMNIA_CHAIN_ID=50312
+   SOMNIA_RPC_URL=https://dream-rpc.somnia.network/
+   SOMNIA_EXPLORER_URL=https://shannon-explorer.somnia.network/
+   SOMNIA_SYMBOL=STT
    ```
 
 ## Running the Application
@@ -328,7 +332,8 @@ Response:
 
 - **Frontend**: HTML, CSS, JavaScript, Bootstrap 5
 - **Backend**: Node.js, Express
-- **AI Integration**: Together AI (meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8)
+- **AI Integration**: Google Gemini 1.5 Pro
+- **Network**: Somnia Testnet (Chain ID: 50312)
 - **Visualization**: D3.js for vulnerability heatmap
 
 ## Contributing
@@ -347,6 +352,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Together AI for providing the AI model
+- Google for providing the Gemini AI model
+- Somnia network for the innovative blockchain platform
 - OpenZeppelin for smart contract security best practices
-- The Ethereum community for valuable feedback and testing
+- The blockchain community for valuable feedback and testing

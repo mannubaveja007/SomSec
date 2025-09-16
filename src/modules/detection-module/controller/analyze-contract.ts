@@ -15,7 +15,7 @@ export const analyzeContractHandler = async (req: Request, res: Response) => {
         await validateRequest(request)
 
         // Analyze the smart contract
-        const analysisResult = await DetectionService.analyzeSmartContract(request.contractCode)
+        const analysisResult = await DetectionService.analyzeSmartContract(request.contractCode, request.contractName)
 
         // Send the analysis result as JSON
         res.json(analysisResult)
