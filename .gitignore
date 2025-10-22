@@ -131,3 +131,8 @@ dist
 
 .DS_Store
 .vercel
+
+# Lock files (use npm only)
+yarn.lock
+pnpm-lock.yaml
+.yarnrc.yml
