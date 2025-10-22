@@ -4,10 +4,10 @@
     "description": "AI-powered smart contract security analyzer for Somnia network",
     "scripts": {
         "dev": " nodemon",
-        "build": "rimraf dist && cross-env NODE_ENV=production tsc && tsc-alias dist --outDir ./dist && cp -r src/routes dist/src/ && cp -r src/public dist/src/",
+        "build": "rimraf dist && cross-env NODE_ENV=production tsc && tsc-alias dist --outDir ./dist && mkdir -p dist/src && cp -r src/routes dist/src/ && cp -r src/public dist/src/",
         "vercel-build": "npm run build",
-        "preview": "NODE_ENV=development node dist/src/app.js",
-        "start": "NODE_ENV=production node dist/src/app.js",
+        "preview": "NODE_ENV=development node dist/app.js",
+        "start": "NODE_ENV=production node dist/app.js",
         "test": "jest --silent=false",
         "test:watch": "jest --watch",
         "ts-check": "tsc --noEmit",
