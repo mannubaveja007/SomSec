@@ -128,41 +128,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Sample contract with a vulnerability
-    const sampleContract = `// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+    // Helper function to get contract code from Monaco Editor or fallback to textarea
+    function getContractCode() {
+        if (window.getEditorValue) {
+            return window.getEditorValue();
+        }
+        return contractCode.value;
+    }
 
-contract VulnerableBank {
-    mapping(address => uint) public balances;
-    
-    function deposit() public payable {
-        balances[msg.sender] += msg.value;
+    // Helper function to set contract code in Monaco Editor or fallback to textarea
+    function setContractCode(value) {
+        if (window.setEditorValue) {
+            window.setEditorValue(value);
+        } else {
+            contractCode.value = value;
+        }
     }
-    
-    function withdraw(uint _amount) public {
-        require(balances[msg.sender] >= _amount);
-        
-        (bool sent, ) = msg.sender.call{value: _amount}("");
-        require(sent, "Failed to send Ether");
-        
-        balances[msg.sender] -= _amount;
-    }
-    
-    function getBalance() public view returns (uint) {
-        return address(this).balance;
-    }
-}`;
-
-    // Function to load sample contract
-    function loadSampleContract(e) {
-        e.preventDefault();
-        contractName.value = "VulnerableBank";
-        contractCode.value = sampleContract;
-    }
-    
-    // Add event listeners to both sample buttons
-    if (sampleBtnTop) sampleBtnTop.addEventListener('click', loadSampleContract);
-    if (sampleBtnBottom) sampleBtnBottom.addEventListener('click', loadSampleContract);
 
     // Function to show alerts
     function showAlert(message, type = 'info') {
@@ -199,8 +180,8 @@ contract VulnerableBank {
     // Copy Postman JSON with current contract data
     copyPostmanBtn.addEventListener('click', function() {
         const name = contractName.value.trim() || "MyContract";
-        const code = contractCode.value.trim() || "pragma solidity ^0.8.0;\n\ncontract MyContract {\n    // Your contract code here\n}";
-        
+        const code = getContractCode().trim() || "pragma solidity ^0.8.0;\n\ncontract MyContract {\n    // Your contract code here\n}";
+
         const formatted = formatContractForAPI(name, code);
         copyToClipboard(formatted.postmanJson, this, 'Copy JSON');
     });
@@ -208,8 +189,8 @@ contract VulnerableBank {
     // Copy cURL command with current contract data
     copyCurlBtn.addEventListener('click', function() {
         const name = contractName.value.trim() || "MyContract";
-        const code = contractCode.value.trim() || "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract MyContract {\n    // Your contract code here\n}";
-        
+        const code = getContractCode().trim() || "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract MyContract {\n    // Your contract code here\n}";
+
         const formatted = formatContractForAPI(name, code);
         copyToClipboard(formatted.curlCommand, this, 'Copy Command');
     });
@@ -238,18 +219,18 @@ contract VulnerableBank {
             id: Date.now().toString(),
             timestamp: new Date().toISOString(),
             contractName: contractName.value,
-            contractCode: contractCode.value,
+            contractCode: getContractCode(),
             result: data
         };
-        
+
         // Add new item at the beginning
         history.unshift(historyItem);
-        
+
         // Keep only the last 10 items
         if (history.length > 10) {
             history.pop();
         }
-        
+
         saveHistory(history);
         renderHistory();
         currentHistoryIndex = 0; // Set to the newest item
@@ -260,13 +241,13 @@ contract VulnerableBank {
         historyList.innerHTML = '';
         
         if (history.length === 0) {
-            historyContainer.classList.add('d-none');
-            prevHistoryBtn.disabled = true;
-            nextHistoryBtn.disabled = true;
+            if (historyContainer) historyContainer.classList.add('hidden');
+            if (prevHistoryBtn) prevHistoryBtn.disabled = true;
+            if (nextHistoryBtn) nextHistoryBtn.disabled = true;
             return;
         }
-        
-        historyContainer.classList.remove('d-none');
+
+        if (historyContainer) historyContainer.classList.remove('hidden');
         
         history.forEach((item, index) => {
             const severity = item.result.overallRisk || 'Unknown';
@@ -329,23 +310,23 @@ contract VulnerableBank {
             console.error('Invalid history index:', index, 'history length:', history.length);
             return;
         }
-        
+
         currentHistoryIndex = index;
         const item = history[index];
-        
+
         if (!item) {
             console.error('History item not found at index:', index);
             return;
         }
-        
+
         // Fill form with historical data
         contractName.value = item.contractName || '';
-        contractCode.value = item.contractCode || '';
-        
+        setContractCode(item.contractCode || '');
+
         // Display results
-        initialState.classList.add('d-none');
-        loadingResults.classList.add('d-none');
-        resultsContent.classList.remove('d-none');
+        if (initialState) initialState.classList.add('hidden');
+        if (loadingResults) loadingResults.classList.add('hidden');
+        if (resultsContent) resultsContent.classList.remove('hidden');
         
         if (item.result) {
             displayResults(item.result);
@@ -385,10 +366,10 @@ contract VulnerableBank {
 
     function resetView() {
         contractName.value = '';
-        contractCode.value = '';
-        initialState.classList.remove('d-none');
-        loadingResults.classList.add('d-none');
-        resultsContent.classList.add('d-none');
+        setContractCode('');
+        if (initialState) initialState.classList.remove('hidden');
+        if (loadingResults) loadingResults.classList.add('hidden');
+        if (resultsContent) resultsContent.classList.add('hidden');
         currentHistoryIndex = -1;
         renderHistory();
     }
@@ -409,13 +390,13 @@ contract VulnerableBank {
     if (formatJsonBtn) {
         formatJsonBtn.addEventListener('click', function() {
             const name = contractName.value.trim();
-            const code = contractCode.value.trim();
-            
+            const code = getContractCode().trim();
+
             if (!name || !code) {
                 showAlert('Please provide both contract name and code', 'warning');
                 return;
             }
-            
+
             const formatted = formatContractForAPI(name, code);
             navigator.clipboard.writeText(formatted.postmanJson)
                 .then(() => {
@@ -426,19 +407,19 @@ contract VulnerableBank {
                 });
         });
     }
-    
+
     // Format cURL button - Formats current contract for cURL
     const formatCurlBtn = document.getElementById('formatCurlBtn');
     if (formatCurlBtn) {
         formatCurlBtn.addEventListener('click', function() {
             const name = contractName.value.trim();
-            const code = contractCode.value.trim();
-            
+            const code = getContractCode().trim();
+
             if (!name || !code) {
                 showAlert('Please provide both contract name and code', 'warning');
                 return;
             }
-            
+
             const formatted = formatContractForAPI(name, code);
             navigator.clipboard.writeText(formatted.curlCommand)
                 .then(() => {
@@ -463,30 +444,35 @@ contract VulnerableBank {
         }
     });
 
-    // Analyze smart contract
-    contractForm.addEventListener('submit', function(e) {
+    // Analyze smart contract - using click event instead of form submit
+    analyzeBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        
+        e.stopPropagation();
+        console.log('Analyze button clicked');
+
         // Show loading state
         analyzeBtn.disabled = true;
-        analyzeSpinner.classList.remove('d-none');
-        loadingResults.classList.remove('d-none');
-        initialState.classList.add('d-none');
-        resultsContent.classList.add('d-none');
-        
+        if (analyzeSpinner) analyzeSpinner.classList.remove('hidden');
+        if (loadingResults) loadingResults.classList.remove('hidden');
+        if (initialState) initialState.classList.add('hidden');
+        if (resultsContent) resultsContent.classList.add('hidden');
+
         // Sanitize and validate input before sending to API
         const contractNameValue = contractName.value.trim();
-        const contractCodeValue = contractCode.value.trim();
-        
+        const contractCodeValue = getContractCode().trim();
+
+        console.log('Contract Name:', contractNameValue);
+        console.log('Contract Code Length:', contractCodeValue.length);
+
         // Basic validation
         if (!contractNameValue) {
-            showAlert('Contract name is required', 'warning');
+            alert('Contract name is required');
             enableForm();
             return;
         }
-        
+
         if (!contractCodeValue) {
-            showAlert('Contract code is required', 'warning');
+            alert('Contract code is required');
             enableForm();
             return;
         }
@@ -502,7 +488,7 @@ contract VulnerableBank {
         // Helper function to enable form elements after request
         function enableForm() {
             analyzeBtn.disabled = false;
-            analyzeSpinner.classList.add('d-none');
+            if (analyzeSpinner) analyzeSpinner.classList.add('hidden');
         }
         
         // Call API with safe JSON stringification
@@ -554,13 +540,13 @@ contract VulnerableBank {
                 </div>
             `;
             
-            resultsContent.classList.remove('d-none');
-            loadingResults.classList.add('d-none');
+            if (resultsContent) resultsContent.classList.remove('hidden');
+            if (loadingResults) loadingResults.classList.add('hidden');
         })
         .finally(() => {
             // Reset button state
             analyzeBtn.disabled = false;
-            analyzeSpinner.classList.add('d-none');
+            if (analyzeSpinner) analyzeSpinner.classList.add('hidden');
         });
     });
 
@@ -568,7 +554,7 @@ contract VulnerableBank {
     function displayResults(data) {
         // Cache the current analysis for visualization and other features
         window.currentAnalysis = data;
-        window.currentContractCode = contractCode.value;
+        window.currentContractCode = getContractCode();
         window.currentContractName = contractName.value;
         
         // Update risk level and summary
@@ -634,20 +620,20 @@ contract VulnerableBank {
         }
         
         // Show results and hide loading
-        resultsContent.classList.remove('d-none');
-        loadingResults.classList.add('d-none');
+        if (resultsContent) resultsContent.classList.remove('hidden');
+        if (loadingResults) loadingResults.classList.add('hidden');
         
         // Enable the save button for database storage
         const saveAnalysisBtn = document.getElementById('saveAnalysisBtn');
         if (saveAnalysisBtn) {
             saveAnalysisBtn.disabled = false;
             saveAnalysisBtn.onclick = function() {
-                saveAnalysisToDatabase(data, contractCode.value);
+                saveAnalysisToDatabase(data, getContractCode());
             };
         }
-        
+
         // Initialize visualization if we're on that tab or when tab is clicked
-        initializeVisualization(data, contractCode.value);
+        initializeVisualization(data, getContractCode());
         
         // Initialize educational content based on vulnerabilities found
         initializeEducationalContent(data);

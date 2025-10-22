@@ -673,3 +673,224 @@ language-json{
             background-color: rgba(108, 92, 231, 0.1);
             border-left: 3px solid var(--primary-color);
         }
+
+/* ========================================
+   Monaco Editor Styles
+   ======================================== */
+
+/* Monaco Editor Container */
+#monacoEditorContainer {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+#monacoEditorContainer:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Monaco Editor Custom Scrollbar (for WebKit browsers) */
+.monaco-scrollable-element > .scrollbar > .slider {
+    background: rgba(121, 121, 121, 0.4) !important;
+}
+
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+    background: rgba(100, 100, 100, 0.7) !important;
+}
+
+/* Monaco Editor Line Numbers */
+.monaco-editor .line-numbers {
+    color: #858585 !important;
+}
+
+/* Monaco Editor Current Line Highlight */
+.monaco-editor .current-line {
+    border: none !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Monaco Editor Selection */
+.monaco-editor .selected-text {
+    background-color: rgba(58, 118, 191, 0.3) !important;
+}
+
+/* Monaco Editor Cursor */
+.monaco-editor .cursor {
+    background-color: #aeafad !important;
+}
+
+/* Monaco Editor Gutter */
+.monaco-editor .margin {
+    background-color: #1e1e1e !important;
+}
+
+/* Monaco Editor Minimap */
+.monaco-editor .minimap {
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.monaco-editor .minimap:hover {
+    opacity: 1;
+}
+
+/* Monaco Editor Focus Border */
+.monaco-editor.focused {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Theme Toggle Button Styles */
+#themeToggle {
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+#themeToggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Light Theme Overrides for Monaco */
+.monaco-editor.vs .line-numbers {
+    color: #237893 !important;
+}
+
+.monaco-editor.vs .current-line {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.monaco-editor.vs .margin {
+    background-color: #f5f5f5 !important;
+}
+
+/* Loading State for Monaco Editor */
+#monacoEditorContainer.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+#monacoEditorContainer.loading::after {
+    content: 'Loading Editor...';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    z-index: 1000;
+}
+
+/* Monaco Editor Suggestions/Autocomplete */
+.monaco-editor .suggest-widget {
+    border-radius: 0.5rem !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Monaco Editor Find Widget */
+.monaco-editor .find-widget {
+    border-radius: 0.5rem !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Monaco Editor Parameter Hints */
+.monaco-editor .parameter-hints-widget {
+    border-radius: 0.5rem !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Monaco Editor Hover Widget */
+.monaco-editor .monaco-hover {
+    border-radius: 0.5rem !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Responsive Monaco Editor */
+@media (max-width: 768px) {
+    #monacoEditorContainer {
+        height: 400px !important;
+    }
+
+    .monaco-editor .minimap {
+        display: none !important;
+    }
+}
+
+/* Animation for Monaco Editor Loading */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#monacoEditorContainer {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Solidity Syntax Highlighting Enhancements */
+.monaco-editor .mtk5 { /* Keywords */
+    font-weight: 600 !important;
+}
+
+.monaco-editor .mtk12 { /* Functions */
+    font-style: italic !important;
+}
+
+/* Error/Warning Squiggles Enhancement */
+.monaco-editor .squiggly-error {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='3' width='6'%3E%3Cpath d='M0 2 L 2 0 L 4 2 L 6 0' stroke='%23ff0000' fill='none'/%3E%3C/svg%3E") repeat-x bottom !important;
+}
+
+.monaco-editor .squiggly-warning {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='3' width='6'%3E%3Cpath d='M0 2 L 2 0 L 4 2 L 6 0' stroke='%23ffa500' fill='none'/%3E%3C/svg%3E") repeat-x bottom !important;
+}
+
+/* Bracket Matching Enhancement */
+.monaco-editor .bracket-match {
+    background-color: rgba(0, 100, 0, 0.2) !important;
+    border: 1px solid rgba(0, 255, 0, 0.3) !important;
+}
+
+/* ========================================
+   Fullscreen Monaco Editor Animations
+   ======================================== */
+
+/* Fullscreen mode styles - Layout only (anime.js handles animations) */
+#monacoEditorWrapper.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+#monacoEditorWrapper.fullscreen #monacoEditorContainer {
+    height: 100% !important;
+    width: 100%;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Fullscreen button active state */
+#fullscreenToggle.active {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+}
+
+/* Button controls overlay */
+#monacoEditorWrapper.fullscreen .absolute.top-3 {
+    z-index: 10000;
+}
+
+/* Disable scroll when fullscreen */
+body.fullscreen-active {
+    overflow: hidden;
+}

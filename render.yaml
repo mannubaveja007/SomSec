@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: somnia-security
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TOGETHER_API_KEY
+        sync: false
+    healthCheckPath: /api/app/health
+    autoDeploy: true
