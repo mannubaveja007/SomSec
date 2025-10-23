@@ -1,8 +1,10 @@
 import { Response } from 'express'
 
-import { logger } from '@/app'
+import { createLogger } from '@/helpers/log.helpers'
 import { errors } from '@/errors'
 import { RequestError } from '@/errors/http.errors'
+
+const logger = createLogger()
 
 /* Singleton Error Handler class to process every error in app. Extend logic to your needs */
 

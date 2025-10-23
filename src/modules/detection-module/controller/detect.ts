@@ -1,11 +1,12 @@
 import { plainToInstance } from 'class-transformer'
 import { Request, Response } from 'express'
 
-import { logger } from '@/app'
-import { ErrorHandler, validateRequest } from '@/helpers'
+import { createLogger, ErrorHandler, validateRequest } from '@/helpers'
 import { DetectionRequest, toDetectionResponse } from '@/modules/detection-module/dtos'
 import { DetectionService } from '@/modules/detection-module/service'
 import { PublicClassFields } from '@/types'
+
+const logger = createLogger()
 
 export const detect = async (
     req: Request<Record<string, string>, PublicClassFields<DetectionRequest>>,

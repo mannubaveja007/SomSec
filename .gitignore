@@ -136,3 +136,7 @@ dist
 yarn.lock
 pnpm-lock.yaml
 .yarnrc.yml
+.next
+out
+*.log
+node_modules

@@ -1,2 +1,2 @@
-export * from './router'
+// Router removed - using Next.js API routes
 export * from './service'

@@ -1,32 +1,36 @@
 {
   "compilerOptions": {
     /* Modules */
-    "module": "CommonJS",
+    "module": "esnext",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-
+    "moduleResolution": "node",
+    "isolatedModules": true,
     /* Language and Environment */
-    "target": "es6",
-
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "jsx": "react-jsx",
     /* Type Checking */
     "noImplicitAny": true,
     "strict": true,
     "skipLibCheck": true,
     "allowJs": true,
-
+    "noEmit": true,
     /* Pathes and imports */
-    "outDir": "./dist",
-    "rootDir": "./src",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "baseUrl": "./",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
       "@": [
-        "src"
+        "./src"
       ],
       "@root/*": [
         "./*"
@@ -35,13 +39,21 @@
         "./"
       ]
     },
-
+    "incremental": true,
     /* Other features */
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
-    "src/**/*"
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
