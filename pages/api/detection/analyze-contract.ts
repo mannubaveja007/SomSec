@@ -1,9 +1,9 @@
 import 'reflect-metadata'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { plainToInstance } from 'class-transformer'
-import { AnalyzeContractRequest } from '../../../src/modules/detection-module/dtos/requests'
-import { DetectionService } from '../../../src/modules/detection-module/service'
-import { validateRequest } from '../../../src/helpers'
+import { AnalyzeContractRequest } from '@/modules/detection-module/dtos/requests'
+import { DetectionService } from '@/modules/detection-module/service'
+import { validateRequest } from '@/helpers'
 
 export const config = {
     api: {

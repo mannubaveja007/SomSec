@@ -1,10 +1,27 @@
 /** @type {import('next').NextConfig} */
+const path = require('path')
+
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
 
-  // Turbopack configuration (empty to silence warnings)
-  turbopack: {},
+  // Turbopack configuration
+  turbopack: {
+    resolveAlias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@root': path.resolve(__dirname, '.'),
+    },
+  },
+
+  // Webpack configuration for non-turbopack builds
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+      '@root': path.resolve(__dirname, '.'),
+    }
+    return config
+  },
 
   // Environment variables
   env: {

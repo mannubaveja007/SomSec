@@ -1,10 +1,10 @@
 import 'reflect-metadata'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { plainToInstance } from 'class-transformer'
-import { createLogger, validateRequest } from '../../../src/helpers'
-import { DetectionRequest, toDetectionResponse } from '../../../src/modules/detection-module/dtos'
-import { DetectionService } from '../../../src/modules/detection-module/service'
-import { RequestError } from '../../../src/errors/http.errors'
+import { createLogger, validateRequest } from '@/helpers'
+import { DetectionRequest, toDetectionResponse } from '@/modules/detection-module/dtos'
+import { DetectionService } from '@/modules/detection-module/service'
+import { RequestError } from '@/errors/http.errors'
 
 const logger = createLogger()
 
